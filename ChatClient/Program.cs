@@ -62,9 +62,9 @@ namespace ChatClient
                     IMessageHandler messageHandler = MessageHandlerFactory.GetMessageHandler(genericMessage.MessageId);
                     messageHandler.Execute(client, message);
                 }
-                catch(System.IO.IOException)
+                catch (System.IO.IOException)
                 { }
-                catch(System.ObjectDisposedException)
+                catch (System.ObjectDisposedException)
                 { }
             }
         }
@@ -90,6 +90,28 @@ namespace ChatClient
                 Console.WriteLine("SocketException: {0}", e);
             }
         }
+ 
+        private static void SendDisconnectMessage()
+        {
+            try
+            {
+                // Prepare disconnect message
+                DisconnectMessage disconnectMessage = new DisconnectMessage();
+                disconnectMessage.SessionId = null;
+                IsConnected = false;
+
+                // Send message
+                SendMessage(JsonSerializer.Serialize(disconnectMessage));
+            }
+            catch (ArgumentNullException e)
+            {
+                Console.WriteLine("ArgumentNullException: {0}", e);
+            }
+            catch (SocketException e)
+            {
+                Console.WriteLine("SocketException: {0}", e);
+            }
+        }
 
         static void Main()
         {
@@ -102,21 +124,30 @@ namespace ChatClient
             Console.WriteLine("Connecting to server.");
             Connect(username, password);
 
-            while(IsConnecting)
+            while (IsConnecting)
             {
 
             }
 
             while (IsConnected)
             {
-                Console.WriteLine("Nachricht eingeben:");
+                Console.WriteLine("Nachricht eingeben, oder \"exit\" zum beenden.");
                 string input = Console.ReadLine();
-                SendChatMessage(input);
+                if (!input.Equals("exit"))
+                {
+                    SendChatMessage(input);
+                }
+                else
+                {
+                    SendDisconnectMessage();
+                    break;
+                }
             }
 
             client.Close();
             Console.WriteLine("Connection closed.");
             Console.ReadKey();
         }
+
     }
 }
