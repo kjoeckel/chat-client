@@ -13,7 +13,8 @@ namespace ChatClient.MessageHandler
             {
                 Program.IsConnected = true;
                 Program.SessionId = connectResponseMessage.SessionId;
-                Console.WriteLine($"Connected! Session Id: {Program.SessionId}");
+                DateTime timeStamp = DateTime.Now;
+                Console.WriteLine($"{timeStamp} Connected! Session Id: {Program.SessionId}");
             }
             else
             {
