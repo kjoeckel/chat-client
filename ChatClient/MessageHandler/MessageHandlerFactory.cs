@@ -8,10 +8,10 @@
             {
                 case 1:
                     return new ChatMessageHandler();
-                case 3:
-                    return new DisconnectMessageHandler();
                 case 4:
                     return new ConnectResponseMessageHandler();
+                case 5:
+                    return new UserCountMessageHandler();
             }
 
             return null;
