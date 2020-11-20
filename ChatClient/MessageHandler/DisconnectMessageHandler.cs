@@ -11,7 +11,7 @@ namespace ChatClient.MessageHandler
             DisconnectMessage disconnectMessage = message as DisconnectMessage;
             Program.IsConnected = false;
             Program.SessionId = null;
-        Console.WriteLine($"Disconnecting");
+            Console.WriteLine($"{disconnectMessage.SessionId} Disconnecting");
         }
     }
 }
