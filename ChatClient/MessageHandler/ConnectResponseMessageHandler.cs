@@ -1,6 +1,7 @@
 ﻿using ChatProtocol;
 using System;
 using System.Net.Sockets;
+using System.Text;
 
 namespace ChatClient.MessageHandler
 {
@@ -14,7 +15,10 @@ namespace ChatClient.MessageHandler
                 Program.IsConnected = true;
                 Program.SessionId = connectResponseMessage.SessionId;
                 DateTime timeStamp = DateTime.Now;
+
                 Console.WriteLine($"{timeStamp} Connected! Session Id: {Program.SessionId}");
+                Console.WriteLine("Type in your message. " +
+                                "for other options type \"/disconnect\" or \"/exit\" .");
             }
             else
             {

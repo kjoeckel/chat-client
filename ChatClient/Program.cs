@@ -143,7 +143,6 @@ namespace ChatClient
 
                 while (IsConnected)
                 {
-                    Console.WriteLine("Nachricht eingeben:");
                     string input = Console.ReadLine();
 
                     switch (input)
