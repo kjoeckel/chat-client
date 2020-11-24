@@ -18,7 +18,7 @@ namespace ChatClient.MessageHandler
 
                 Console.WriteLine($"{timeStamp} Connected! Session Id: {Program.SessionId}");
                 Console.WriteLine("Type in your message. " +
-                                "for other options type \"/disconnect\" or \"/exit\" .");
+                                "Other options: \"/disconnect\"  \"/exit\" \"/users\"");
             }
             else
             {

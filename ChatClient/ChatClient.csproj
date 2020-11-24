@@ -11,4 +11,10 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="users.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

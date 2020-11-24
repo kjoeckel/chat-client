@@ -1,6 +1,8 @@
 ﻿using ChatClient.MessageHandler;
 using ChatProtocol;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Net.Sockets;
 using System.Text.Json;
 using System.Threading;
@@ -13,10 +15,12 @@ namespace ChatClient
         static int serverPort = 13000;
 
         static TcpClient client;
+        public static List<User> users;
         public static string SessionId;
         public static bool IsConnected = false;
         public static bool IsConnecting = false;
         public static bool IsApplicationExecuting = true;
+        public static bool isNewUser = false;
 
         static Thread receiveDataThread;
 
@@ -34,6 +38,21 @@ namespace ChatClient
 
             StartReceiveDataThread();
             SendMessage(JsonSerializer.Serialize(connectMessage));
+        }
+        static void Register(string username, string password)
+        {
+            IsConnecting = true;
+            client = new TcpClient(serverIpAddress, serverPort);
+
+            RegistrationMessage registrationMessage = new RegistrationMessage
+            {
+                ServerPassword = "test123",
+                Username = username,
+                Password = password
+            };
+
+            StartReceiveDataThread();
+            SendMessage(JsonSerializer.Serialize(registrationMessage));
         }
 
         static void Disconnect()
@@ -81,7 +100,7 @@ namespace ChatClient
                 {
                     lock (client)
                     {
-                        byte[] data = new byte[256];
+                        byte[] data = new byte[1024];
                         int bytes = client.GetStream().Read(data, 0, data.Length);
                         string responseData = System.Text.Encoding.UTF8.GetString(data, 0, bytes);
                         GenericMessage genericMessage = JsonSerializer.Deserialize<GenericMessage>(responseData);
@@ -90,9 +109,9 @@ namespace ChatClient
                         messageHandler.Execute(client, message);
                     }
                 }
-                catch(System.IO.IOException)
+                catch (System.IO.IOException)
                 { }
-                catch(System.ObjectDisposedException)
+                catch (System.ObjectDisposedException)
                 { }
             }
         }
@@ -127,14 +146,29 @@ namespace ChatClient
             {
                 Console.Clear();
 
+                Console.WriteLine("Are you a new user? For registration type in \"y\".");
+
+                if (Console.ReadLine().Equals("y"))
+                {
+                    isNewUser = true;
+                }
+
                 Console.WriteLine("Username: ");
                 string username = Console.ReadLine();
 
                 Console.WriteLine("Password: ");
                 string password = Console.ReadLine();
 
-                Console.WriteLine("Connecting to server.");
-                Connect(username, password);
+                if (!isNewUser)
+                {
+                    Console.WriteLine("Connecting to server.");
+                    Connect(username, password);
+                }
+                else
+                {
+                    Console.WriteLine("Connecting to server.");
+                    Register(username, password);
+                }
 
                 while (IsConnecting)
                 {
@@ -149,6 +183,14 @@ namespace ChatClient
                     {
                         case "/disconnect":
                             Disconnect();
+                            break;
+                        case "/users":
+                            string usersOnServer = File.ReadAllText("users.json");
+                            users = JsonSerializer.Deserialize<List<User>>(usersOnServer);
+                            foreach (var user in users)
+                            {
+                                Console.WriteLine($"Name: {user.Username} \tID: {user.Id}");
+                            }
                             break;
                         case "/exit":
                             Disconnect();
